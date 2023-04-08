@@ -1,5 +1,5 @@
-.idea
 .gitignore
+.idea
 venv
 .env
 __pycache__/
