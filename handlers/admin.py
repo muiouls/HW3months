@@ -19,7 +19,7 @@ async def pin(message: types.Message):
 
 
 async def game(message: types.Message):
-    if message.from_user.id in ADMINS:
+    if message.from_user.id in ADMINS and message.text.startswith('game'):
         emoji_list = ['⚽', '🏀', '🎲', '🎯', '🎳', '🎰']
         r = random.choice(emoji_list)
         await bot.send_dice(message.chat.id, emoji=r)
