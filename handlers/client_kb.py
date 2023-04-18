@@ -33,7 +33,6 @@ direction_markup = ReplyKeyboardMarkup(
     KeyboardButton("CANCEL")
 )
 
-
 submit_markup = ReplyKeyboardMarkup(
     resize_keyboard=True,
     one_time_keyboard=True,
