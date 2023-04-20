@@ -2,11 +2,13 @@ from aiogram import Dispatcher, types
 from config import bot, dp
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from .client_kb import start_markup
+from database.bot_db import sql_command_random
 
 
 # @dp.message_handler(commands=['start'])
 async def start_command(message: types.Message):
-    await bot.send_message(message.from_user.id, f'Здравствуй, мой господин {message.from_user.full_name}!', reply_markup=start_markup)
+    await bot.send_message(message.from_user.id, f'Здравствуй, мой господин {message.from_user.full_name}!',
+                           reply_markup=start_markup)
 
 
 # @dp.message_handler(commands=['quiz'])
@@ -51,8 +53,19 @@ async def dice_game(message: types.Message):
         await message.answer("Пользователь победил")
 
 
+async def get_random_mentor(message: types.Message):
+    random_user = await sql_command_random()
+    await message.answer(
+        f"id: {random_user[1]} \n"
+        f"Имя: {random_user[2]} \n"
+        f"Направление: {random_user[3]} \n"
+        f"Возраст: {random_user[4]} \n"
+        f"Группа: {random_user[5]}")
+
+
 def register_handlers_clients(dp: Dispatcher):
     dp.register_message_handler(start_command, commands=['start'])
     dp.register_message_handler(quiz_1, commands=['quiz'])
     dp.register_message_handler(mem, commands=['mem'])
     dp.register_message_handler(dice_game, commands=['dice'])
+    dp.register_message_handler(get_random_mentor, commands=['get'])

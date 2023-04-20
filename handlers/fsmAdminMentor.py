@@ -5,10 +5,11 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from config import ADMINS
 from . import client_kb
 from .client_kb import start_markup
+from database.bot_db import sql_command_insert
 
 
 class FSMAdmin(StatesGroup):
-    id = State()
+    telegram_id = State()
     name = State()
     direction = State()
     age = State()
@@ -18,7 +19,7 @@ class FSMAdmin(StatesGroup):
 
 async def fsm_start(message: types.Message):
     if message.chat.type == 'private' and message.from_user.id in ADMINS:
-        await FSMAdmin.id.set()
+        await FSMAdmin.telegram_id.set()
         await message.answer(f'Здравствуй, мой господин {message.from_user.full_name}')
         await message.answer('Введите id ментора :', reply_markup=client_kb.cancel_markup)
     elif message.from_user.id not in ADMINS:
@@ -32,7 +33,7 @@ async def load_id(message: types.Message, state: FSMContext):
         await message.answer('Не забывайте, что  id состоит только из цифр')
     else:
         async with state.proxy() as data:
-            data['id'] = message.text
+            data['telegram_id'] = message.text
         await FSMAdmin.next()
         await message.answer('Как зовут ментора?')
 
@@ -70,7 +71,7 @@ async def load_group(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['group'] = message.text
         await message.answer(
-            f"id: {data['id']} \n"
+            f"id: {data['telegram_id']} \n"
             f"Имя: {data['name']} \n"
             f"Направление: {data['direction']} \n"
             f"Возраст: {data['age']} \n"
@@ -81,10 +82,11 @@ async def load_group(message: types.Message, state: FSMContext):
 
 async def submit_state(message: types.Message, state: FSMContext):
     if message.text == 'ДА':
+        await sql_command_insert(state)
         await state.finish()
         await message.answer('Вы успешно зарегистрировали ментора!', reply_markup=start_markup)
     elif message.text == 'ЗАНОВО':
-        await FSMAdmin.id.set()
+        await FSMAdmin.telegram_id.set()
         await message.answer('Введите id ментора :')
 
 
@@ -100,7 +102,7 @@ def register_handler_fsm(dp: Dispatcher):
     dp.register_message_handler(cancel_reg, Text(equals='cancel', ignore_case=True), state='*')
 
     dp.register_message_handler(fsm_start, commands=['reg'])
-    dp.register_message_handler(load_id, state=FSMAdmin.id)
+    dp.register_message_handler(load_id, state=FSMAdmin.telegram_id)
     dp.register_message_handler(load_name, state=FSMAdmin.name)
     dp.register_message_handler(load_direction, state=FSMAdmin.direction)
     dp.register_message_handler(load_age, state=FSMAdmin.age)
