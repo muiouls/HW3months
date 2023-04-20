@@ -3,15 +3,17 @@ from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 start_markup = ReplyKeyboardMarkup(
     resize_keyboard=True,
     one_time_keyboard=True,
-    row_width=2
+    row_width=3
 )
 
 start_button = KeyboardButton("/start")
 quiz_button = KeyboardButton("/quiz")
 mem_button = KeyboardButton("/mem")
 reg_button = KeyboardButton("/reg")
+delete_button = KeyboardButton("/delete")
+dice_button = KeyboardButton("/dice")
 
-start_markup.add(start_button, quiz_button, mem_button, reg_button)
+start_markup.add(start_button, quiz_button, mem_button, reg_button, delete_button, dice_button)
 
 cancel_markup = ReplyKeyboardMarkup(
     resize_keyboard=True,
