@@ -2,7 +2,7 @@ from aiogram.utils import executor
 import logging
 
 from config import dp, bot, ADMINS
-from handlers import clients, callback, extra, admin, fsmAdminMentor
+from handlers import clients, callback, extra, admin, fsmAdminMentor, notification
 from database.bot_db import sql_create
 from handlers.client_kb import start_markup
 
@@ -15,6 +15,7 @@ admin.register_handlers_admin(dp)
 
 
 async def on_startup(dp):
+    await notification.set_scheduler()
     sql_create()
     await bot.send_message(ADMINS[0], "HI!", reply_markup=start_markup)
 

@@ -41,5 +41,3 @@ async def sql_command_all():
 async def sql_command_delete(id):
     cursor.execute("DELETE FROM mentors WHERE id = ?", (id,))
     db.commit()
-
-
