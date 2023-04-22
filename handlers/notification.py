@@ -22,7 +22,7 @@ async def set_scheduler():
         trigger=CronTrigger(
             day_of_week=6,
             hour=23,
-            minute=00,
+            minute=0,
             start_date=datetime.datetime.now(),
             end_date='2023-06-19'
         )
