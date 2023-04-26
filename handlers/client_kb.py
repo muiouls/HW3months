@@ -12,8 +12,9 @@ mem_button = KeyboardButton("/mem")
 reg_button = KeyboardButton("/reg")
 delete_button = KeyboardButton("/delete")
 dice_button = KeyboardButton("/dice")
+anime_button = KeyboardButton("/anime")
 
-start_markup.add(start_button, quiz_button, mem_button, reg_button, delete_button, dice_button)
+start_markup.add(start_button, quiz_button, mem_button, reg_button, delete_button, dice_button, anime_button)
 
 cancel_markup = ReplyKeyboardMarkup(
     resize_keyboard=True,

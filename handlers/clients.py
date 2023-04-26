@@ -3,6 +3,10 @@ from config import bot, dp
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from .client_kb import start_markup
 from database.bot_db import sql_command_random
+import random
+from parser.site_parser import parser
+from aiogram.types import ParseMode
+
 
 
 # @dp.message_handler(commands=['start'])
@@ -63,9 +67,20 @@ async def get_random_mentor(message: types.Message):
         f"Группа: {random_user[5]}")
 
 
+async def get_random_anime(message: types.Message):
+    data = parser()
+    anime_list = random.sample(data, 5)
+    anime_message = "Список случайных 5 аниме весеннего сезона 2023 года:\n"
+    for anime in anime_list:
+        anime_message += f"*Название: {anime['title']}*\nТип: {anime['type']}\nОписание: {anime['description']}\nСсылка: {anime['url']}\n\n"
+    await bot.send_message(chat_id=message.chat.id, text=anime_message, parse_mode=ParseMode.MARKDOWN, reply_markup=start_markup)
+
+
 def register_handlers_clients(dp: Dispatcher):
     dp.register_message_handler(start_command, commands=['start'])
     dp.register_message_handler(quiz_1, commands=['quiz'])
     dp.register_message_handler(mem, commands=['mem'])
     dp.register_message_handler(dice_game, commands=['dice'])
     dp.register_message_handler(get_random_mentor, commands=['get'])
+    dp.register_message_handler(get_random_anime, commands=['anime'])
+
