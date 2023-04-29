@@ -24,6 +24,7 @@ def get_data(html):
             "url": item.find("div", class_="h5 font-weight-normal mb-1").find("a").get("href"),
             "type": item.find("a", class_="text-link-gray text-underline").string,
             "description": item.find("div", class_="description d-none d-sm-block").getText(),
+            "poto": item.find("div", class_="anime-list-lazy lazy").get("data-original")
         })
     return anime
 
@@ -34,6 +35,3 @@ def parser():
         raise Exception("Error in parser!")
     data = get_data(html.text)
     return data
-
-
-

@@ -1,4 +1,4 @@
-from aiogram import Dispatcher, types
+from aiogram import Dispatcher, types, executor
 from config import bot, dp
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from .client_kb import start_markup
@@ -6,7 +6,10 @@ from database.bot_db import sql_command_random
 import random
 from parser.site_parser import parser
 from aiogram.types import ParseMode
-
+import logging
+import yt_dlp
+import os
+import time
 
 
 # @dp.message_handler(commands=['start'])
@@ -76,6 +79,41 @@ async def get_random_anime(message: types.Message):
     await bot.send_message(chat_id=message.chat.id, text=anime_message, parse_mode=ParseMode.MARKDOWN, reply_markup=start_markup)
 
 
+class FilenameCollectorPP(yt_dlp.postprocessor.common.PostProcessor):
+    def __init__(self):
+        super(FilenameCollectorPP, self).__init__(None)
+        self.filenames = []
+
+    def run(self, information):
+        self.filenames.append(information["filepath"])
+        return [], information
+
+
+async def search(message: types.Message):
+    arg = message.get_args()
+    YDL_OPTIONS = {'fotmat': 'bestaudio/best',
+                  'noplaylist': 'True',
+                  'postprocessor': [{
+                      'key': 'FFmpegExtractAudio',
+                      'preferredcodec': 'mp3',
+                      'preferredquality': '192'
+                  }]
+    }
+    with yt_dlp.YoutubeDL(YDL_OPTIONS) as ydl:
+        try:
+            get(arg)
+        except:
+            filename_collector = FilenameCollectorPP()
+            ydl.add_post_processor(filename_collector)
+            video = ydl.extract_info(f"ytsearch: {arg}", download=True)['entries'][0]
+            await message.reply_document(open(filename_collector.filenames[0], 'rb'))
+            time.sleep(5)
+            os.remove(filename_collector.filenames[0])
+        else:
+            video = ydl.extract_info(arg, download=True)
+        return filename_collector.filenames[0]
+
+
 def register_handlers_clients(dp: Dispatcher):
     dp.register_message_handler(start_command, commands=['start'])
     dp.register_message_handler(quiz_1, commands=['quiz'])
@@ -83,4 +121,5 @@ def register_handlers_clients(dp: Dispatcher):
     dp.register_message_handler(dice_game, commands=['dice'])
     dp.register_message_handler(get_random_mentor, commands=['get'])
     dp.register_message_handler(get_random_anime, commands=['anime'])
+    dp.register_message_handler(search, commands=['music'])
 
